@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 마음속 퇴사 요정 부화 진행도 테스트</title>
+    <style>
+        /* CSS Settings */
+        :root {
+            --color-1: #5E0006;
+            /* Dark Burgundy */
+            --color-2: #9B0F06;
+            /* Deep Red */
+            --color-3: #D53E0F;
+            /* Orange Red */
+            --color-4: #EED9B9;
+            /* Warm Beige */
+            --bg-color: #FAFAFA;
+            /* Light gray/white */
+            --text-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background-color: #FFFFFF;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 32px 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #FFFFFF;
+        }
+
+        section.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* Buttons */
+        button {
+            background-color: var(--color-3);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 12px rgba(213, 62, 15, 0.2);
+            width: 100%;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: var(--color-2);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Landing View */
+        #view-landing {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .landing-title {
+            color: var(--color-1);
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            word-break: keep-all;
+            line-height: 1.4;
+        }
+
+        .emoji-box {
+            background-color: var(--color-4);
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            margin-bottom: 50px;
+            box-shadow: 0 8px 24px rgba(238, 217, 185, 0.6);
+        }
+
+        .landing-desc {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            background-color: #FFFFFF;
+            width: 100%;
+        }
+
+        /* Question View */
+        #view-question {
+            justify-content: flex-start;
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: var(--text-color);
+            box-shadow: none;
+            width: auto;
+            padding: 8px;
+            margin-right: 16px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .back-btn:hover {
+            background-color: #F5F5F5;
+            color: var(--text-color);
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            height: 8px;
+            background-color: #F0F0F0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--color-3);
+            width: 0%;
+            transition: width 0.4s ease-out;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: var(--color-3);
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            text-align: center;
+            margin-bottom: 50px;
+            word-break: keep-all;
+        }
+
+        .answer-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .answer-btn {
+            background-color: #FFFFFF;
+            color: var(--text-color);
+            border: 2px solid var(--color-4);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            padding: 20px;
+            height: auto;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+            transition: all 0.2s;
+        }
+
+        .answer-btn:hover {
+            background-color: var(--color-4);
+            color: var(--color-1);
+            border-color: var(--color-4);
+        }
+
+        /* Loading View */
+        #view-loading {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #F0F0F0;
+            border-top: 6px solid var(--color-2);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-1);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Result View */
+        #view-result {
+            overflow-y: auto;
+            justify-content: flex-start;
+        }
+
+        .result-subtext {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result-title {
+            color: var(--color-1);
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        .result-image-box {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            background-color: var(--color-4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(238, 217, 185, 0.6);
+        }
+
+        .result-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .result-card {
+            background-color: var(--color-4);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .result-desc {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        .healing-section {
+            margin-bottom: 40px;
+        }
+
+        .healing-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-1);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .healing-list {
+            list-style: none;
+        }
+
+        .healing-item {
+            background-color: #F8F8F8;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .healing-item::before {
+            content: "✨";
+            font-size: 16px;
+        }
+
+        .result-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .outline-btn {
+            background-color: #FFFFFF;
+            color: var(--color-3);
+            border: 2px solid var(--color-3);
+            box-shadow: none;
+        }
+
+        .outline-btn:hover {
+            background-color: #FFF5F2;
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-top: auto;
+            padding: 32px 0 16px;
+            text-align: center;
+            font-size: 13px;
+            color: #777;
+            background-color: transparent;
+            width: 100%;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #777;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-1);
+            text-decoration: underline;
+        }
+
+        .footer-divider {
+            color: #CCC;
+            font-size: 11px;
+        }
+
+        .footer-copyright {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .footer-notice {
+            font-size: 11px;
+            color: #999;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-container">
+        <!-- 1. 랜딩 뷰 -->
+        <section id="view-landing" class="active">
+            <h1 class="landing-title">나의 퇴사 요정 부화 진행도 테스트</h1>
+            <div class="emoji-box">🧚</div>
+            <button id="btn-start">테스트 시작하기</button>
+            <div class="landing-desc">
+                매일 아침 눈을 뜰 때마다 퇴사를 고민하시나요?<br>
+                내 마음속에서 자라고 있는 퇴사 요정의 상태를 알아보고, 나에게 딱 맞는 힐링 처방을 받아보세요!
+            </div>
+
+            <footer class="app-footer">
+                <div class="footer-links">
+                    <a href="#">소개 (About)</a>
+                    <span class="footer-divider">|</span>
+                    <a href="#">개인정보처리방침 (Privacy Policy)</a>
+                    <span class="footer-divider">|</span>
+                    <a href="#">문의 (Contact)</a>
+                </div>
+                <p class="footer-copyright">© 2026 나의 퇴사 요정 부화 진행도 테스트. All rights reserved.</p>
+                <p class="footer-notice">본 사이트는 구글 애드센스 운영 정책을 준수하며, 사용자에게 유익한 정보성 심리 콘텐츠를 제공합니다.</p>
+            </footer>
+        </section>
+
+        <!-- 2. 질문 뷰 -->
+        <section id="view-question">
+            <div class="top-nav">
+                <button id="btn-back" class="back-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                    이전으로
+                </button>
+            </div>
+            <div class="progress-wrapper">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="question-number" class="question-number">1 / 8</div>
+            <h2 id="question-text" class="question-text">질문 텍스트</h2>
+            <div class="answer-group">
+                <button class="answer-btn" onclick="selectAnswer(0)">답변 1</button>
+                <button class="answer-btn" onclick="selectAnswer(1)">답변 2</button>
+            </div>
+
+            <footer class="app-footer">
+                <div class="footer-links">
+                    <a href="#">소개 (About)</a>
+                    <span class="footer-divider">|</span>
+                    <a href="#">개인정보처리방침 (Privacy Policy)</a>
+                    <span class="footer-divider">|</span>
+                    <a href="#">문의 (Contact)</a>
+                </div>
+                <p class="footer-copyright">© 2026 나의 퇴사 요정 부화 진행도 테스트. All rights reserved.</p>
+                <p class="footer-notice">본 사이트는 구글 애드센스 운영 정책을 준수하며, 사용자에게 유익한 정보성 심리 콘텐츠를 제공합니다.</p>
+            </footer>
+        </section>
+
+        <!-- 3. 로딩 뷰 -->
+        <section id="view-loading">
+            <div class="spinner"></div>
+            <div class="loading-text">요정의 상태를 확인하는 중...</div>
+        </section>
+
+        <!-- 4. 결과 뷰 -->
+        <section id="view-result">
+            <div class="result-subtext">당신의 마음속에는...</div>
+            <h2 id="result-title" class="result-title">결과 타이틀</h2>
+
+            <div class="result-image-box">
+                <img id="result-image" src="" alt="요정 이미지">
+            </div>
+
+            <div class="result-card">
+                <p id="result-desc" class="result-desc">결과 설명</p>
+            </div>
+
+            <div class="healing-section">
+                <div class="healing-title">✨ 추천 힐링 처방전</div>
+                <ul class="healing-list">
+                    <li id="healing-item" class="healing-item">힐링 방법</li>
+                </ul>
+            </div>
+
+            <div class="result-btn-group">
+                <button id="btn-restart">테스트 다시하기</button>
+                <button class="outline-btn" onclick="location.href='#'">다른 테스트하기</button>
+            </div>
+
+            <footer class="app-footer">
+                <div class="footer-links">
+                    <a href="#">소개 (About)</a>
+                    <span class="footer-divider">|</span>
+                    <a href="#">개인정보처리방침 (Privacy Policy)</a>
+                    <span class="footer-divider">|</span>
+                    <a href="#">문의 (Contact)</a>
+                </div>
+                <p class="footer-copyright">© 2026 나의 퇴사 요정 부화 진행도 테스트. All rights reserved.</p>
+                <p class="footer-notice">본 사이트는 구글 애드센스 운영 정책을 준수하며, 사용자에게 유익한 단정보성 심리 콘텐츠를 제공합니다.</p>
+            </footer>
+        </section>
+    </div>
+
+    <script>
+        const questionsJSON = [
+            { id: 1, text: "아침에 눈을 떴을 때 드는 생각은?", answers: [{ text: "'오늘 할 일이 뭐더라?' (계획)", type: "J" }, { text: "'5분만 더... 아니 그냥 퇴사할까?' (회피)", type: "P" }] },
+            { id: 2, text: "점심시간, 동료가 업무 얘기를 꺼낸다면?", answers: [{ text: "'그건 말이죠~' 같이 고민한다.", type: "E" }, { text: "'제발 밥 먹을 땐 밥만 먹자...'", type: "I" }] },
+            { id: 3, text: "상사가 갑자기 부를 때 내 심장 박동은?", answers: [{ text: "'네! 가고 있습니다' (덤덤/신속)", type: "T" }, { text: "'나 뭐 잘못했나? 설마 퇴사각?' (불안)", type: "F" }] },
+            { id: 4, text: "퇴근 직전, 추가 업무가 내려왔다!", answers: [{ text: "'빨리 끝내고 가야지' (정면돌파)", type: "S" }, { text: "'이건 인권 침해다... (이미 넋나감)'", type: "N" }] },
+            { id: 5, text: "주말에 나는 주로 무엇을 하며 시간을 보내나?", answers: [{ text: "친구들을 만나 에너지를 채운다.", type: "E" }, { text: "혼자 침대와 물아일체가 된다.", type: "I" }] },
+            { id: 6, text: "나를 가장 화나게 하는 빌런 유형은?", answers: [{ text: "일 못해서 나까지 피곤하게 하는 사람", type: "T" }, { text: "예의 없고 무례하게 구는 사람", type: "F" }] },
+            { id: 7, text: "월급날, 통장을 확인했을 때 드는 생각은?", answers: [{ text: "'이 맛에 일하지! 다음 달도 화이팅'", type: "S" }, { text: "'내 영혼을 판 값 치곤 너무 적다...'", type: "N" }] },
+            { id: 8, text: "지금 당장 일주일의 휴가가 생긴다면?", answers: [{ text: "제주도 한 달 살기 등 꽉 찬 계획", type: "J" }, { text: "아무도 없는 곳에서 무한 수면", type: "P" }] }
+        ];
+
+        const resultsJSON = {
+            "ESTJ": { title: "워커홀릭 전사 요정", description: "아직 퇴사보다는 업무 성과가 중요한 당신! 일잘러로 인정받으며 불도저처럼 일하고 있습니다.", healing: "맛있는 오마카세로 스스로에게 럭셔리한 보상하기" },
+            "INFP": { title: "투명망토를 쓴 유령 요정", description: "몸은 사무실에 있지만 영혼은 이미 퇴근했습니다. 사직서를 가슴에 품고 다니는 중이네요.", healing: "디지털 디톡스 & 아무도 없는 숲길 산책하기" },
+            "ENTP": { title: "이 구역의 마이웨이 요정", description: "스트레스는 받지만 내 살길은 내가 찾는다! 번뜩이는 아이디어로 이직이나 딴짓을 도모 중입니다.", healing: "새로운 취미 클래스 등록해서 리프레시하기" },
+            "ISFJ": { title: "눈물 많은 감성 요정", description: "작은 지적에도 '나 때문인가?' 싶어 밤잠 설칩니다. 마음의 벽지가 너덜너덜해졌어요.", healing: "따뜻한 차 한 잔 마시며 슬픈 영화 보고 펑펑 울기" },
+            "ESTP": { title: "파괴왕 헐크 요정", description: "퇴사 부화율 99%! 건드리면 폭발하기 직전의 상태입니다. 다 때려치우고 싶다는 생각이 가득합니다.", healing: "복싱이나 스피닝 등 격한 운동으로 땀과 분노 분출하기" },
+            "INFJ": { title: "사색에 잠긴 철학자 요정", description: "나는 왜 여기서 일하는가? 자아 성찰 모드에 빠졌습니다. 의미 없는 업무에 지쳐갑니다.", healing: "조용한 북카페에서 혼자만의 시간 듬뿍 가지기" },
+            "ESFP": { title: "욜로(YOLO) 지망생 요정", description: "오늘만 산다! 회사 스트레스를 퇴근 후 핫플 탐방으로 푸는 중. 텅장이 퇴사를 막고 있습니다.", healing: "친구들과 신나는 홈파티로 웃음 되찾기" },
+            "ISTJ": { title: "월급만 기다리는 존버 요정", description: "묵묵히 버티는 당신. 퇴사하고 싶지만 통장 잔고와 대출금을 떠올리며 이성적으로 인내합니다.", healing: "통장 잔고 확인 후, 평소 갖고 싶었던 소확행 아이템 결제하기" },
+            "ENFJ": { title: "오지랖 넓은 수호천사 요정", description: "내 일보다 남의 일이 더 걱정인 당신. 동료들 챙기느라 정작 내 멘탈은 바스라지는 중입니다.", healing: "팀원들과 소소한 티타임 가지며 스트레스 털어내기" },
+            "ENFP": { title: "환상 속의 피터팬 요정", description: "회사 밖은 재밌는 게 너무 많아! 회의 시간에도 머릿속은 이미 다음 여행지로 떠나있습니다.", healing: "주말에 훌쩍 페스티벌이나 놀이공원으로 떠나기" },
+            "ENTJ": { title: "야망 가득한 불도저 요정", description: "퇴사요? 제가 이 회사 차릴 건데요? 비효율적인 시스템을 보면 다 뜯어고치고 싶은 워커홀릭입니다.", healing: "하루쯤은 아무 계획 없이 누워서 넷플릭스 정주행하기" },
+            "ESFJ": { title: "따뜻한 인싸 요정", description: "주변 사람들의 평화가 곧 나의 평화! 하지만 쏟아지는 감정 노동에 에너지가 방전되어 가고 있습니다.", healing: "예쁜 카페에서 맛있는 디저트 먹으며 당 충전하기" },
+            "INTP": { title: "방구석 아인슈타인 요정", description: "논리 없는 업무 지시가 제일 싫습니다. 속으로는 '왜 이따위로 하지?' 생각하며 조용히 이직을 준비합니다.", healing: "관심사 파고들기! 혼자서 레고 조립하거나 게임하며 힐링하기" },
+            "ISFP": { title: "자유로운 베짱이 요정", description: "조각조각 부서지는 멘탈 속에서도 평화로움을 찾습니다. 남의 일에 참견 안 하고 내 할 일만 조용히 끝냅니다.", healing: "따사로운 햇살 맞으며 멍때리기, 집에서 식물 가꾸기" },
+            "INTJ": { title: "냉철한 팩트폭격기 요정", description: "비효율을 혐오하며, 모든 상황의 플랜 B를 짜둔 상태입니다. 조용히 내 능력을 키워 완벽한 타이밍에 퇴사하려 합니다.", healing: "방해받지 않는 공간에서 혼자 전략 게임이나 퍼즐 맞추기" },
+            "ISTP": { title: "마이웨이 기술자 요정", description: "굳이 나대지 않고 최소한의 에너지로 최대 효율을 뽑아냅니다. 문제 상황에서도 시니컬하고 쿨하게 대처합니다.", healing: "복잡한 생각 없이 혼자 드라이브 가거나 공구 만지며 노는 시간" }
+        };
+
+        let currentIndex = 0;
+        let scores = {}; // Selected types counts
+        let typeHistory = []; // To support going back
+
+        // Views
+        const viewLanding = document.getElementById('view-landing');
+        const viewQuestion = document.getElementById('view-question');
+        const viewLoading = document.getElementById('view-loading');
+        const viewResult = document.getElementById('view-result');
+
+        // Questions elements
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const progressbar = document.getElementById('progress-bar');
+        const answerBtns = document.querySelectorAll('.answer-btn');
+
+        // Init App
+        document.getElementById('btn-start').addEventListener('click', startTest);
+        document.getElementById('btn-back').addEventListener('click', goBack);
+        document.getElementById('btn-restart').addEventListener('click', startTest);
+
+        function switchView(fromView, toView) {
+            fromView.classList.remove('active');
+            toView.classList.add('active');
+        }
+
+        function startTest() {
+            currentIndex = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            typeHistory = [];
+            updateQuestion();
+
+            // Hide all views and show question view
+            const views = [viewLanding, viewQuestion, viewLoading, viewResult];
+            const currentActive = views.find(v => v.classList.contains('active'));
+            if (currentActive !== viewQuestion) {
+                switchView(currentActive, viewQuestion);
+            }
+        }
+
+        function updateQuestion() {
+            const q = questionsJSON[currentIndex];
+            questionNumber.textContent = `${currentIndex + 1} / ${questionsJSON.length}`;
+            questionText.textContent = q.text;
+
+            // Setup answers
+            answerBtns[0].textContent = q.answers[0].text;
+            answerBtns[0].onclick = () => selectAnswer(q.answers[0].type);
+
+            answerBtns[1].textContent = q.answers[1].text;
+            answerBtns[1].onclick = () => selectAnswer(q.answers[1].type);
+
+            // Update progress bar
+            const progress = (currentIndex / questionsJSON.length) * 100;
+            progressbar.style.width = `${progress}%`;
+        }
+
+        function selectAnswer(type) {
+            scores[type]++;
+            typeHistory.push(type);
+
+            if (currentIndex < questionsJSON.length - 1) {
+                currentIndex++;
+                updateQuestion();
+            } else {
+                // Final progress update
+                progressbar.style.width = '100%';
+                showLoading();
+            }
+        }
+
+        function goBack() {
+            if (currentIndex > 0) {
+                const lastType = typeHistory.pop();
+                scores[lastType]--;
+                currentIndex--;
+                updateQuestion();
+            } else {
+                switchView(viewQuestion, viewLanding);
+            }
+        }
+
+        function showLoading() {
+            switchView(viewQuestion, viewLoading);
+            setTimeout(showResult, 1500);
+        }
+
+        function showResult() {
+            const resultType = calculateMBTI();
+            const resultData = resultsJSON[resultType];
+
+            document.getElementById('result-title').textContent = resultData.title;
+            document.getElementById('result-image').src = `images/${resultType}.png`;
+            document.getElementById('result-image').alt = resultData.title;
+            document.getElementById('result-desc').innerHTML = resultData.description;
+            document.getElementById('healing-item').textContent = resultData.healing;
+
+            switchView(viewLoading, viewResult);
+        }
+
+        function calculateMBTI() {
+            const E_or_I = scores.E >= scores.I ? 'E' : 'I';
+            const S_or_N = scores.S >= scores.N ? 'S' : 'N';
+            const T_or_F = scores.T >= scores.F ? 'T' : 'F';
+            const J_or_P = scores.J >= scores.P ? 'J' : 'P';
+            return E_or_I + S_or_N + T_or_F + J_or_P;
+        }
+    </script>
+</body>
+
+</html>
